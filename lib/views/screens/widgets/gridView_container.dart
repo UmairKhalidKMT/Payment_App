@@ -8,17 +8,17 @@ class GridViewContainer extends StatelessWidget {
   final String text;
 
   const GridViewContainer({
-    Key? key,
+    super.key,
     required this.iconData,
     required this.text,required this.ontap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: ontap,
       child: Container(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.lightBlackColor,
           borderRadius: BorderRadius.circular(12),
@@ -35,7 +35,7 @@ class GridViewContainer extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                textStyle: TextStyle(color: AppColors.whiteColor, fontSize: 18,fontWeight: FontWeight.bold),
+                textStyle: const  TextStyle(color: AppColors.whiteColor, fontSize: 18,fontWeight: FontWeight.bold),
               ),
             ),
           ],

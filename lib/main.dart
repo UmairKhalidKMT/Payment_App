@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/home/home_screen.dart';
+import 'package:payment_app/views/screens/merchant/merchant_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,9 +21,9 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.primaryColor,
           )),
-      routes: const {
+      routes:  {
         // '/login': (context) => LoginScreen(),
-        // '/home': (context) => HomeScreen(),
+        '/merchant': (context) => const MerchantScreen(),
         // '/reports-home': (context) => ReportsHomeScreen(),
         // '/enter-amount': (context) => EnterAmountScreen(),
         // '/tap-insert': (context) => EnterAmountScreen(),

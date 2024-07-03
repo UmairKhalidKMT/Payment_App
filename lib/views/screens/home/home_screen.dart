@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/utils/app_colors.dart';
@@ -14,8 +13,7 @@ class HomeScreen extends StatelessWidget {
         'iconName': Icons.business_center_outlined,
         'title': 'Merchants',
         'navigator': () {
-                    Navigator.pushNamed(context, '/reports-home');
-
+          Navigator.pushNamed(context, '/merchant');
         },
       },
       {
@@ -40,7 +38,6 @@ class HomeScreen extends StatelessWidget {
         'title': 'Users',
         'navigator': () {},
       },
-      
       {
         'iconName': Icons.insert_chart,
         'title': 'Reports',
@@ -64,14 +61,14 @@ class HomeScreen extends StatelessWidget {
                       height: 40,
                       width: 40,
                       child: Image.asset('assets/images/logo.png')),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     'Payments',
                     style: GoogleFonts.poppins(
-                      textStyle:
-                          TextStyle(color: AppColors.whiteColor, fontSize: 32),
+                      textStyle: const TextStyle(
+                          color: AppColors.whiteColor, fontSize: 32),
                     ),
                   ),
                 ],
