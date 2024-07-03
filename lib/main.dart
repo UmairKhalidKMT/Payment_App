@@ -21,9 +21,10 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.primaryColor,
           )),
-      routes:  {
+      routes: {
         // '/login': (context) => LoginScreen(),
         '/merchant': (context) => const MerchantScreen(),
+
         // '/reports-home': (context) => ReportsHomeScreen(),
         // '/enter-amount': (context) => EnterAmountScreen(),
         // '/tap-insert': (context) => EnterAmountScreen(),
