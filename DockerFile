@@ -1,0 +1,46 @@
+FROM dart:stable
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    unzip \
+    xz-utils \
+    git \
+    curl \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Flutter version
+ENV FLUTTER_VERSION=3.7.0
+
+# Download Flutter SDK
+RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter \
+    && cd /usr/local/flutter \
+    && git checkout $FLUTTER_VERSION
+
+# Add Flutter to PATH
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Enable Flutter web
+RUN flutter channel stable \
+    && flutter upgrade \
+    && flutter config --enable-web
+
+# Create a non-root user and set permissions
+RUN useradd -ms /bin/bash developer \
+    && echo 'developer ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && chown -R developer:developer /usr/local/flutter
+
+# Set the user to `developer`
+USER developer
+
+# Set Git safe directory
+RUN git config --global --add safe.directory /usr/local/flutter
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the project files
+COPY --chown=developer:developer . .
+
+# Ensure dependencies are installed
+RUN flutter pub get
