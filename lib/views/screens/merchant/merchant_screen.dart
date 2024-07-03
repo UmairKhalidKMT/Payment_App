@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:payment_app/views/screens/widgets/button.dart';
+import 'package:payment_app/views/screens/widgets/textfield.dart';
 
 class MerchantScreen extends StatefulWidget {
   const MerchantScreen({super.key});
@@ -25,26 +27,26 @@ class _MerchantScreenState extends State<MerchantScreen> {
           content: SingleChildScrollView(
             child: Column(
               children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: phoneController,
-                  decoration: InputDecoration(labelText: 'Phone'),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: addressController,
-                  decoration: InputDecoration(labelText: 'Address'),
-                ),
-                TextField(
-                  controller: businessNameController,
-                  decoration: InputDecoration(labelText: 'Business Name'),
-                ),
+                Textfield(
+                    label: 'Name',
+                    textInputType: TextInputType.name,
+                    controller: nameController),
+                Textfield(
+                    label: 'Phone',
+                    textInputType: TextInputType.phone,
+                    controller: phoneController),
+                Textfield(
+                    label: 'Email',
+                    textInputType: TextInputType.emailAddress,
+                    controller: emailController),
+                Textfield(
+                    label: 'Address',
+                    textInputType: TextInputType.emailAddress,
+                    controller: addressController),
+                Textfield(
+                    label: 'Business',
+                    textInputType: TextInputType.name,
+                    controller: businessNameController),
               ],
             ),
           ),
@@ -55,9 +57,9 @@ class _MerchantScreenState extends State<MerchantScreen> {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: Text('Add'),
-              onPressed: () {
+            ButtonWidget(
+              btnName: 'Add',
+              voidCallback: () {
                 setState(() {
                   merchants.add({
                     'name': nameController.text,
@@ -69,7 +71,7 @@ class _MerchantScreenState extends State<MerchantScreen> {
                 });
                 Navigator.of(context).pop();
               },
-            ),
+            )
           ],
         );
       },
