@@ -18,20 +18,17 @@ class _MerchantScreen extends State<MerchantScreen> {
             floating: false,
             pinned: true,
             snap: false,
-            elevation: 10,
+            elevation: 10,  
             backgroundColor: Colors.deepPurple,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: const Text(
+              title: Text(
                 'Merhcant Screen',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-              background: Stack(
-                fit: StackFit.expand,
               ),
             ),
           ),
