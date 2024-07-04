@@ -18,12 +18,13 @@ class Textfield extends StatelessWidget {
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(width: 3, color: Colors.orangeAccent),
+            borderSide: const BorderSide(width: 6),
           ),
           label: Text(label),
         ),
         keyboardType: textInputType,
         controller: controller,
+
         // Set focus change listener
       ),
     );

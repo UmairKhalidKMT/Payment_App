@@ -3,15 +3,17 @@ import 'package:payment_app/utils/app_colors.dart';
 
 class ButtonWidget extends StatelessWidget {
   final String btnName;
+  final Icon? icon;
   final VoidCallback? voidCallback;
   const ButtonWidget(
-      {super.key, required this.btnName, required this.voidCallback});
+      {super.key, required this.btnName, required this.voidCallback, this.icon});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: voidCallback,
+      
       child: Container(
         height: 50,
         width: screenWidth / 4,
@@ -28,7 +30,9 @@ class ButtonWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold),
           ),
         ),
+        
       ),
+      
     );
   }
 }
