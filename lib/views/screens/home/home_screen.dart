@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
         'iconName': Icons.devices,
         'title': 'Devices',
         'navigator': () {
-          Navigator.pushNamed(context, '/enter-amount');
+          Navigator.pushNamed(context, '/devices');
         },
       },
       {

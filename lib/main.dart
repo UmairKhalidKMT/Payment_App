@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:payment_app/utils/app_colors.dart';
+import 'package:payment_app/views/screens/devices/device_screen.dart';
 import 'package:payment_app/views/screens/home/home_screen.dart';
 import 'package:payment_app/views/screens/merchant/merchant_screen.dart';
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         // '/login': (context) => LoginScreen(),
         '/merchant': (context) => const MerchantScreen(),
 
-        // '/reports-home': (context) => ReportsHomeScreen(),
+        '/devices': (context) => const DeviceScreen(),
         // '/enter-amount': (context) => EnterAmountScreen(),
         // '/tap-insert': (context) => EnterAmountScreen(),
       },
