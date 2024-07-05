@@ -26,17 +26,16 @@ class HomeScreen extends StatelessWidget {
       {
         'iconName': Icons.receipt_long_outlined,
         'title': 'Schedule of Charges',
-        'navigator': () {},
-      },
-      {
-        'iconName': Icons.report_outlined,
-        'title': 'Reports',
-        'navigator': () {},
+        'navigator': () {
+          Navigator.pushNamed(context, '/charges');
+        },
       },
       {
         'iconName': Icons.person_2_outlined,
         'title': 'Users',
-        'navigator': () {},
+        'navigator': () {
+          Navigator.pushNamed(context, '/user');
+        },
       },
       {
         'iconName': Icons.insert_chart,

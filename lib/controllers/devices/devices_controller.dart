@@ -16,6 +16,6 @@ class DevicesController extends ChangeNotifier {
 
   void deleteDevice(int index) {
     devices.removeAt(index);
-    notifyListeners;
+    notifyListeners();
   }
 }
