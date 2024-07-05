@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
-import 'package:payment_app/models/merchant/merchant_form_model.dart';
+import 'package:payment_app/controllers/devices/devices_controller.dart';
+import 'package:payment_app/models/devices/devices_model.dart';
 import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 
-class MerchantScreen extends StatelessWidget {
-  const MerchantScreen({super.key});
+class DeviceScreen extends StatelessWidget {
+  const DeviceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => MerchantController(),
+      create: (_) => DevicesController(),
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -32,7 +32,7 @@ class MerchantScreen extends StatelessWidget {
             },
           ),
           title: Text(
-            'Merchants',
+            'Devices',
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(fontSize: 22),
             ),
@@ -46,20 +46,20 @@ class MerchantScreen extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.person_add_rounded),
                     iconSize: screenWidth / 13,
-                    onPressed: () => _showAddMerchantDialog(context),
+                    onPressed: () => _showAddDeviceDialog(context),
                   ),
                 );
               },
             ),
           ],
         ),
-        body: Consumer<MerchantController>(
+        body: Consumer<DevicesController>(
           builder: (context, controller, child) {
             return ListView.builder(
-              itemCount: controller.merchants.length,
+              itemCount: controller.devices.length,
               itemBuilder: (context, index) {
-                final merchant = controller.merchants[index];
-                final isInactive = merchant.status == 'Inactive';
+                final device = controller.devices[index];
+                final isInactive = device.status == 'Inactive';
                 return Card(
                   elevation: 5.0,
                   margin: const EdgeInsets.only(
@@ -69,33 +69,33 @@ class MerchantScreen extends StatelessWidget {
                     tileColor: AppColors.lightBlackColor,
                     selectedColor: AppColors.lightWhiteColor,
                     title: Text(
-                      merchant.name,
+                      device.deviceSn,
                       style: TextStyle(
                         color: isInactive
                             ? AppColors.redColor
                             : AppColors.whiteColor,
                       ),
                     ),
-                    subtitle: Text(merchant.businessName),
+                    subtitle: Text(device.productKey),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            controller.deleteMerchant(index);
+                            controller.deleteDevice(index);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.update_rounded),
                           onPressed: () {
-                            _showUpdateMerchantDialog(context, index, merchant);
+                            _showUpdateDeviceDialog(context, index, device);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.visibility),
                           onPressed: () {
-                            _showMerchantDetails(context, merchant);
+                            _showDeviceDetails(context, device);
                           },
                         ),
                       ],
@@ -110,50 +110,43 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showAddMerchantDialog(BuildContext context) {
-    final controller = Provider.of<MerchantController>(context, listen: false);
-    final nameController = TextEditingController();
-    final phoneController = TextEditingController();
-    final emailController = TextEditingController();
-    final addressController = TextEditingController();
-    final businessNameController = TextEditingController();
+  void _showAddDeviceDialog(BuildContext context) {
+    final controller = Provider.of<DevicesController>(context, listen: false);
+    final deviceSnController = TextEditingController();
+    final productKeyController = TextEditingController();
+    final locationController = TextEditingController();
+    final merchantIdController = TextEditingController();
     String status = 'Active';
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add New User'),
+          title: const Text('Add New Device'),
           content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    controller: deviceSnController,
+                    decoration: const InputDecoration(labelText: 'Device SN'),
                     keyboardType: TextInputType.name,
                   ),
                   TextField(
-                    controller: phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  TextField(
-                    controller: addressController,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                    keyboardType: TextInputType.streetAddress,
-                  ),
-                  TextField(
-                    controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
+                    controller: productKeyController,
+                    decoration: const InputDecoration(labelText: 'Product Key'),
                     keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: locationController,
+                    decoration: const InputDecoration(labelText: 'Location'),
+                    keyboardType: TextInputType.text,
+                  ),
+                  TextField(
+                    controller: merchantIdController,
+                    decoration: const InputDecoration(labelText: 'Merchant ID'),
+                    keyboardType: TextInputType.text,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -188,12 +181,11 @@ class MerchantScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-                controller.addMerchant(Merchant(
-                  name: nameController.text,
-                  phone: phoneController.text,
-                  email: emailController.text,
-                  address: addressController.text,
-                  businessName: businessNameController.text,
+                controller.addDevice(Devices(
+                  deviceSn: deviceSnController.text,
+                  productKey: productKeyController.text,
+                  location: locationController.text,
+                  merchantId: merchantIdController.text,
                   status: status,
                 ));
                 Navigator.of(context).pop();
@@ -206,52 +198,44 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showUpdateMerchantDialog(
-      BuildContext context, int index, Merchant merchant) {
-    final controller = Provider.of<MerchantController>(context, listen: false);
-    final nameController = TextEditingController(text: merchant.name);
-    final phoneController = TextEditingController(text: merchant.phone);
-    final emailController = TextEditingController(text: merchant.email);
-    final addressController = TextEditingController(text: merchant.address);
-    final businessNameController =
-        TextEditingController(text: merchant.businessName);
-    String status = merchant.status;
+  void _showUpdateDeviceDialog(
+      BuildContext context, int index, Devices device) {
+    final controller = Provider.of<DevicesController>(context, listen: false);
+    final deviceSnController = TextEditingController(text: device.deviceSn);
+    final productKeyController = TextEditingController(text: device.productKey);
+    final locationController = TextEditingController(text: device.location);
+    final merchantIdController = TextEditingController(text: device.merchantId);
+    String status = device.status;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Update User'),
+          title: const Text('Update Device'),
           content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    controller: deviceSnController,
+                    decoration: const InputDecoration(labelText: 'Device SN'),
                     keyboardType: TextInputType.name,
                   ),
                   TextField(
-                    controller: phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  TextField(
-                    controller: addressController,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                    keyboardType: TextInputType.streetAddress,
-                  ),
-                  TextField(
-                    controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
+                    controller: productKeyController,
+                    decoration: const InputDecoration(labelText: 'Product Key'),
                     keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: locationController,
+                    decoration: const InputDecoration(labelText: 'Location'),
+                    keyboardType: TextInputType.text,
+                  ),
+                  TextField(
+                    controller: merchantIdController,
+                    decoration: const InputDecoration(labelText: 'Merchant ID'),
+                    keyboardType: TextInputType.text,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -286,14 +270,13 @@ class MerchantScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Update',
               voidCallback: () {
-                controller.updateMerchant(
+                controller.updateDevice(
                     index,
-                    Merchant(
-                      name: nameController.text,
-                      phone: phoneController.text,
-                      email: emailController.text,
-                      address: addressController.text,
-                      businessName: businessNameController.text,
+                    Devices(
+                      deviceSn: deviceSnController.text,
+                      productKey: productKeyController.text,
+                      location: locationController.text,
+                      merchantId: merchantIdController.text,
                       status: status,
                     ));
                 Navigator.of(context).pop();
@@ -306,27 +289,25 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showMerchantDetails(BuildContext context, Merchant merchant) {
+  void _showDeviceDetails(BuildContext context, Devices device) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('User Details'),
+          title: const Text('Device Details'),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Name: ${merchant.name}'),
+                Text('Device SN: ${device.deviceSn}'),
                 const SizedBox(height: 8),
-                Text('Phone: ${merchant.phone}'),
+                Text('Product Key: ${device.productKey}'),
                 const SizedBox(height: 8),
-                Text('Email: ${merchant.email}'),
+                Text('Location: ${device.location}'),
                 const SizedBox(height: 8),
-                Text('Address: ${merchant.address}'),
+                Text('Merchant ID: ${device.merchantId}'),
                 const SizedBox(height: 8),
-                Text('Business Name: ${merchant.businessName}'),
-                const SizedBox(height: 8),
-                Text('Status: ${merchant.status}'),
+                Text('Status: ${device.status}'),
               ],
             ),
           ),

@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
-import 'package:payment_app/models/merchant/merchant_form_model.dart';
-import 'package:provider/provider.dart';
+import 'package:payment_app/controllers/user/user_controller.dart';
+import 'package:payment_app/models/user/user_model.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
+import 'package:provider/provider.dart';
 
-class MerchantScreen extends StatelessWidget {
-  const MerchantScreen({super.key});
+class UserScreen extends StatefulWidget {
+  const UserScreen({super.key});
 
+  @override
+  State<UserScreen> createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => MerchantController(),
+      create: (_) => UserController(),
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -32,7 +37,7 @@ class MerchantScreen extends StatelessWidget {
             },
           ),
           title: Text(
-            'Merchants',
+            'User Management',
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(fontSize: 22),
             ),
@@ -46,56 +51,53 @@ class MerchantScreen extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.person_add_rounded),
                     iconSize: screenWidth / 13,
-                    onPressed: () => _showAddMerchantDialog(context),
+                    onPressed: () => _showAddUserDialog(context),
                   ),
                 );
               },
             ),
           ],
         ),
-        body: Consumer<MerchantController>(
+        body: Consumer<UserController>(
           builder: (context, controller, child) {
             return ListView.builder(
-              itemCount: controller.merchants.length,
+              itemCount: controller.users.length,
               itemBuilder: (context, index) {
-                final merchant = controller.merchants[index];
-                final isInactive = merchant.status == 'Inactive';
+                final user = controller.users[index];
+                final isInactive = user.status == 'Inactive';
                 return Card(
                   elevation: 5.0,
-                  margin: const EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  margin: const EdgeInsets.all(8.0),
                   child: ListTile(
                     tileColor: AppColors.lightBlackColor,
-                    selectedColor: AppColors.lightWhiteColor,
                     title: Text(
-                      merchant.name,
+                      '${user.firstName} ${user.lastName}',
                       style: TextStyle(
                         color: isInactive
                             ? AppColors.redColor
                             : AppColors.whiteColor,
                       ),
                     ),
-                    subtitle: Text(merchant.businessName),
+                    subtitle: Text(user.email),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            controller.deleteMerchant(index);
+                            controller.deleteUser(index);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.update_rounded),
                           onPressed: () {
-                            _showUpdateMerchantDialog(context, index, merchant);
+                            _showUpdateUserDialog(context, index, user);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.visibility),
                           onPressed: () {
-                            _showMerchantDetails(context, merchant);
+                            _showUserDetails(context, user);
                           },
                         ),
                       ],
@@ -110,13 +112,14 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showAddMerchantDialog(BuildContext context) {
-    final controller = Provider.of<MerchantController>(context, listen: false);
-    final nameController = TextEditingController();
-    final phoneController = TextEditingController();
+  void _showAddUserDialog(BuildContext context) {
+    final controller = Provider.of<UserController>(context, listen: false);
+    final firstNameController = TextEditingController();
+    final lastNameController = TextEditingController();
     final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final phoneController = TextEditingController();
     final addressController = TextEditingController();
-    final businessNameController = TextEditingController();
     String status = 'Active';
 
     showDialog(
@@ -130,14 +133,12 @@ class MerchantScreen extends StatelessWidget {
               child: Column(
                 children: [
                   TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                    keyboardType: TextInputType.name,
+                    controller: firstNameController,
+                    decoration: const InputDecoration(labelText: 'First Name'),
                   ),
                   TextField(
-                    controller: phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                    keyboardType: TextInputType.phone,
+                    controller: lastNameController,
+                    decoration: const InputDecoration(labelText: 'Last Name'),
                   ),
                   TextField(
                     controller: emailController,
@@ -145,15 +146,19 @@ class MerchantScreen extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                   ),
                   TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
+                  TextField(
+                    controller: phoneController,
+                    decoration: const InputDecoration(labelText: 'Phone'),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  TextField(
                     controller: addressController,
                     decoration: const InputDecoration(labelText: 'Address'),
                     keyboardType: TextInputType.streetAddress,
-                  ),
-                  TextField(
-                    controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
-                    keyboardType: TextInputType.name,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -188,12 +193,13 @@ class MerchantScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-                controller.addMerchant(Merchant(
-                  name: nameController.text,
-                  phone: phoneController.text,
+                controller.addUser(UserModel(
+                  firstName: firstNameController.text,
+                  lastName: lastNameController.text,
                   email: emailController.text,
+                  password: passwordController.text,
+                  phone: phoneController.text,
                   address: addressController.text,
-                  businessName: businessNameController.text,
                   status: status,
                 ));
                 Navigator.of(context).pop();
@@ -206,16 +212,15 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showUpdateMerchantDialog(
-      BuildContext context, int index, Merchant merchant) {
-    final controller = Provider.of<MerchantController>(context, listen: false);
-    final nameController = TextEditingController(text: merchant.name);
-    final phoneController = TextEditingController(text: merchant.phone);
-    final emailController = TextEditingController(text: merchant.email);
-    final addressController = TextEditingController(text: merchant.address);
-    final businessNameController =
-        TextEditingController(text: merchant.businessName);
-    String status = merchant.status;
+  void _showUpdateUserDialog(BuildContext context, int index, UserModel user) {
+    final controller = Provider.of<UserController>(context, listen: false);
+    final firstNameController = TextEditingController(text: user.firstName);
+    final lastNameController = TextEditingController(text: user.lastName);
+    final emailController = TextEditingController(text: user.email);
+    final passwordController = TextEditingController(text: user.password);
+    final phoneController = TextEditingController(text: user.phone);
+    final addressController = TextEditingController(text: user.address);
+    String status = user.status;
 
     showDialog(
       context: context,
@@ -228,14 +233,12 @@ class MerchantScreen extends StatelessWidget {
               child: Column(
                 children: [
                   TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                    keyboardType: TextInputType.name,
+                    controller: firstNameController,
+                    decoration: const InputDecoration(labelText: 'First Name'),
                   ),
                   TextField(
-                    controller: phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                    keyboardType: TextInputType.phone,
+                    controller: lastNameController,
+                    decoration: const InputDecoration(labelText: 'Last Name'),
                   ),
                   TextField(
                     controller: emailController,
@@ -243,15 +246,19 @@ class MerchantScreen extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                   ),
                   TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
+                  TextField(
+                    controller: phoneController,
+                    decoration: const InputDecoration(labelText: 'Phone'),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  TextField(
                     controller: addressController,
                     decoration: const InputDecoration(labelText: 'Address'),
                     keyboardType: TextInputType.streetAddress,
-                  ),
-                  TextField(
-                    controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
-                    keyboardType: TextInputType.name,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -286,14 +293,15 @@ class MerchantScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Update',
               voidCallback: () {
-                controller.updateMerchant(
+                controller.updateUser(
                     index,
-                    Merchant(
-                      name: nameController.text,
-                      phone: phoneController.text,
+                    UserModel(
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
                       email: emailController.text,
+                      password: passwordController.text,
+                      phone: phoneController.text,
                       address: addressController.text,
-                      businessName: businessNameController.text,
                       status: status,
                     ));
                 Navigator.of(context).pop();
@@ -306,7 +314,7 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showMerchantDetails(BuildContext context, Merchant merchant) {
+  void _showUserDetails(BuildContext context, UserModel user) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -316,17 +324,17 @@ class MerchantScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Name: ${merchant.name}'),
+                Text('First Name: ${user.firstName}'),
                 const SizedBox(height: 8),
-                Text('Phone: ${merchant.phone}'),
+                Text('Last Name: ${user.lastName}'),
                 const SizedBox(height: 8),
-                Text('Email: ${merchant.email}'),
+                Text('Email: ${user.email}'),
                 const SizedBox(height: 8),
-                Text('Address: ${merchant.address}'),
+                Text('Phone: ${user.phone}'),
                 const SizedBox(height: 8),
-                Text('Business Name: ${merchant.businessName}'),
+                Text('Address: ${user.address}'),
                 const SizedBox(height: 8),
-                Text('Status: ${merchant.status}'),
+                Text('Status: ${user.status}'),
               ],
             ),
           ),
