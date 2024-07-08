@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
-import 'package:payment_app/models/merchant/merchant_form_model.dart';
+import 'package:payment_app/controllers/subgroup_controller.dart';
+import 'package:payment_app/models/merchant/merchant_details.dart';
 import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 
-class MerchantScreen extends StatelessWidget {
+class MerchantScreen extends StatefulWidget {
   const MerchantScreen({super.key});
+
+  @override
+  State<MerchantScreen> createState() => _MerchantScreenState();
+}
+
+class _MerchantScreenState extends State<MerchantScreen> {
+  MerchantController controller = MerchantController();
+  SubgroupController subgroupController = SubgroupController();
+  String? selectedsubgroup;
+  String? selectedstatus;
+  String? updatestatus;
+  String? updatesubgroup;
+  bool isloading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchingmerchant();
+    subgroupController.fetchingsubgroup();
+    Future.delayed(Duration(seconds: 2)).then((value) {
+      setState(() {
+        isloading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => MerchantController(),
-      child: Scaffold(
+      child: isloading
+          ? Center(child: CircularProgressIndicator())
+          : Scaffold(
         appBar: AppBar(
           centerTitle: true,
           toolbarHeight: 60.2,
@@ -53,56 +82,87 @@ class MerchantScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: Consumer<MerchantController>(
-          builder: (context, controller, child) {
-            return ListView.builder(
-              itemCount: controller.merchants.length,
-              itemBuilder: (context, index) {
-                final merchant = controller.merchants[index];
-                final isInactive = merchant.status == 'Inactive';
-                return Card(
-                  elevation: 5.0,
-                  margin: const EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: ListTile(
-                    tileColor: AppColors.lightBlackColor,
-                    selectedColor: AppColors.lightWhiteColor,
-                    title: Text(
-                      merchant.name,
-                      style: TextStyle(
-                        color: isInactive
-                            ? AppColors.redColor
-                            : AppColors.whiteColor,
-                      ),
-                    ),
-                    subtitle: Text(merchant.businessName),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            controller.deleteMerchant(index);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.update_rounded),
-                          onPressed: () {
-                            _showUpdateMerchantDialog(context, index, merchant);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.visibility),
-                          onPressed: () {
-                            _showMerchantDetails(context, merchant);
-                          },
-                        ),
-                      ],
-                    ),
+        body: ListView.builder(
+          itemCount: controller.getmerchant!.data!.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 5.0,
+              margin: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              child: ListTile(
+                tileColor: AppColors.lightBlackColor,
+                selectedColor: AppColors.lightWhiteColor,
+                title: Text(
+                  controller.getmerchant!.data![index].name.toString(),
+                  style: TextStyle(
+                    color: AppColors.whiteColor,
                   ),
-                );
-              },
+                ),
+                subtitle: Text(
+                  controller.getmerchant!.data![index].name.toString(),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        await controller.deletemerhant(controller
+                            .getmerchant!.data![index].merchantId
+                            .toString());
+                        setState(() {
+                          isloading = true;
+                        });
+                        await controller.fetchingmerchant();
+                        setState(() {
+                          isloading = false;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.update_rounded),
+                      onPressed: () {
+                        _showUpdateMerchantDialog(
+                          context,
+                          controller.getmerchant!.data![index].name
+                              .toString(),
+                          controller.getmerchant!.data![index].phone
+                              .toString(),
+                          controller.getmerchant!.data![index].email
+                              .toString(),
+                          controller.getmerchant!.data![index].address
+                              .toString(),
+                          controller.getmerchant!.data![index]
+                              .businessName
+                              .toString(),
+                          controller.getmerchant!.data![index].status
+                              .toString(),
+                          controller.getmerchant!.data![index].subgroup!
+                              .subgroupName
+                              .toString(),
+                          controller.getmerchant!.data![index].merchantId
+                              .toString(),
+
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.visibility),
+                      onPressed: () {
+                       _showMerchantDetails(context,
+                           controller.getmerchant!.data![index].name.toString(),
+                           controller.getmerchant!.data![index].phone.toString(),
+                           controller.getmerchant!.data![index].email.toString(),
+                           controller.getmerchant!.data![index].address.toString(),
+                           controller.getmerchant!.data![index].businessName.toString(),
+                         controller.getmerchant!.data![index].status.toString(),
+                       );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             );
           },
         ),
@@ -151,26 +211,50 @@ class MerchantScreen extends StatelessWidget {
                   ),
                   TextField(
                     controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
+                    decoration: const InputDecoration(labelText: 'Business Name'),
                     keyboardType: TextInputType.name,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
-                      value: status,
+                      value: selectedstatus,
                       decoration: const InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['Active', 'Inactive'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
                       onChanged: (newValue) {
-                        status = newValue!;
+                        selectedstatus = newValue!;
+                        print(selectedstatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedsubgroup,
+                      decoration: const InputDecoration(
+                        labelText: 'subgroup',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: subgroupController.getsubgroup_list?.data?.map((e) => DropdownMenuItem(
+                        value: e.subgroupId.toString(),
+                        child: Text(e.subgroupName.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedsubgroup = newValue;
+                        });
                       },
                     ),
                   ),
@@ -187,16 +271,23 @@ class MerchantScreen extends StatelessWidget {
             ),
             ButtonWidget(
               btnName: 'Add',
-              voidCallback: () {
-                controller.addMerchant(Merchant(
-                  name: nameController.text,
-                  phone: phoneController.text,
-                  email: emailController.text,
-                  address: addressController.text,
-                  businessName: businessNameController.text,
-                  status: status,
-                ));
-                Navigator.of(context).pop();
+              voidCallback: () async {
+                await controller.createmerchat(
+                  nameController.text,
+                  phoneController.text,
+                  emailController.text,
+                  businessNameController.text,
+                  selectedstatus.toString(),
+                  addressController.text,
+                  selectedsubgroup.toString(),
+                );
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MerchantScreen(),
+                  ),
+                );
               },
               icon: const Icon(Icons.add_task_outlined),
             ),
@@ -207,15 +298,29 @@ class MerchantScreen extends StatelessWidget {
   }
 
   void _showUpdateMerchantDialog(
-      BuildContext context, int index, Merchant merchant) {
+      BuildContext context,
+      String name,
+      String phone,
+      String email,
+      String address,
+      String businessName,
+      String status,
+      String subgroup,
+      String merchantid
+      ) {
     final controller = Provider.of<MerchantController>(context, listen: false);
-    final nameController = TextEditingController(text: merchant.name);
-    final phoneController = TextEditingController(text: merchant.phone);
-    final emailController = TextEditingController(text: merchant.email);
-    final addressController = TextEditingController(text: merchant.address);
-    final businessNameController =
-        TextEditingController(text: merchant.businessName);
-    String status = merchant.status;
+    final nameController = TextEditingController(text: name);
+    final phoneController = TextEditingController(text: phone);
+    final emailController = TextEditingController(text: email);
+    final addressController = TextEditingController(text: address);
+    final businessNameController = TextEditingController(text: businessName);
+
+    List<String?> subgroupIds = subgroupController.getsubgroup_list?.data?.map((e) => e.subgroupId.toString()).toList() ?? [];
+    if (!subgroupIds.contains(subgroup)) {
+      subgroup = (subgroupIds.isNotEmpty ? subgroupIds.first : null)!;
+    }
+
+    updatesubgroup = subgroup;
 
     showDialog(
       context: context,
@@ -249,26 +354,51 @@ class MerchantScreen extends StatelessWidget {
                   ),
                   TextField(
                     controller: businessNameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Business Name'),
+                    decoration: const InputDecoration(labelText: 'Business Name'),
                     keyboardType: TextInputType.name,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
-                      value: status,
+                      value: updatestatus,
                       decoration: const InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['Active', 'Inactive'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
                       onChanged: (newValue) {
-                        status = newValue!;
+                         updatestatus = newValue!;
+                         print(updatestatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: updatesubgroup,
+                      decoration: const InputDecoration(
+                        labelText: 'subgroup',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: subgroupController.getsubgroup_list?.data?.map((e) => DropdownMenuItem(
+                        value: e.subgroupId.toString(),
+                        child: Text(e.subgroupName.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          updatesubgroup = newValue;
+                          print(updatesubgroup);
+                        });
                       },
                     ),
                   ),
@@ -286,17 +416,22 @@ class MerchantScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Update',
               voidCallback: () {
-                controller.updateMerchant(
-                    index,
-                    Merchant(
-                      name: nameController.text,
-                      phone: phoneController.text,
-                      email: emailController.text,
-                      address: addressController.text,
-                      businessName: businessNameController.text,
-                      status: status,
-                    ));
-                Navigator.of(context).pop();
+                controller.updatemerchant(
+                    nameController.text,
+                    phoneController.text,
+                    emailController.text,
+                    businessNameController.text,
+                    updatestatus.toString(),
+                    addressController.text,
+                    updatesubgroup.toString(),
+                    merchantid
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MerchantScreen(),
+                  ),
+                );
               },
               icon: const Icon(Icons.update),
             ),
@@ -306,7 +441,14 @@ class MerchantScreen extends StatelessWidget {
     );
   }
 
-  void _showMerchantDetails(BuildContext context, Merchant merchant) {
+  void _showMerchantDetails(BuildContext context,
+      String name,
+      String phone,
+      String email,
+      String adress,
+      String businessname ,
+      String status
+      ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -316,17 +458,17 @@ class MerchantScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Name: ${merchant.name}'),
+                Text('Name: ${name.toString()}'),
                 const SizedBox(height: 8),
-                Text('Phone: ${merchant.phone}'),
+                Text('Phone: ${phone}'),
                 const SizedBox(height: 8),
-                Text('Email: ${merchant.email}'),
+                Text('Email: ${email}'),
                 const SizedBox(height: 8),
-                Text('Address: ${merchant.address}'),
+                Text('Address: ${adress}'),
                 const SizedBox(height: 8),
-                Text('Business Name: ${merchant.businessName}'),
+                Text('Business Name: ${businessname}'),
                 const SizedBox(height: 8),
-                Text('Status: ${merchant.status}'),
+                Text('Status: ${status}'),
               ],
             ),
           ),

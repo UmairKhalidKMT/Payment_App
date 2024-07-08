@@ -1,15 +1,38 @@
+import 'dart:convert';
+
 class Devices {
-  String deviceSn;
-  String productKey;
-  String location;
-  String merchantId;
-  String status;
+  int? terminalId;
+  String? terminalSn;
+  String? productKey;
+  String? location;
+  int? merchantId;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
 
   Devices({
-    required this.deviceSn,
-    required this.productKey,
-    required this.location,
-    required this.merchantId,
-    required this.status,
+    this.terminalId,
+    this.terminalSn,
+    this.productKey,
+    this.location,
+    this.merchantId,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
   });
+
+  Devices.fromJson(Map<String, dynamic> json) {
+    terminalId = json['terminal_id'];
+    terminalSn = json['terminal_sn'];
+    productKey = json['product_key'];
+    location = json['location'];
+    merchantId = json['merchant_id'];
+    status = json['status'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  static List<Devices> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => Devices.fromJson(json)).toList();
+  }
 }

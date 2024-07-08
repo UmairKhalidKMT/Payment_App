@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           )),
       routes: {
         // '/login': (context) => LoginScreen(),
-        '/merchant': (context) => const MerchantScreen(),
+         '/merchant': (context) =>  MerchantScreen(),
 
         '/devices': (context) => const DeviceScreen(),
         '/charges': (context) => const ScheduleCharges(),
