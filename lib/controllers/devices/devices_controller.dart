@@ -57,11 +57,56 @@ class DevicesController extends ChangeNotifier {
     }
   }
 
+  //..............................delete the device.........................................................
+
+  Future<void> deletedevice(String id) async {
+    var result = await device_repository().Deletedevice(id);
+    // print('get Brand details: $result');
+    //
+    // getmerchant=merchants_list.fromJson(result);
+    // getmerchant!.data!.forEach((element) {
+    //   print(element.name);
+    // });
+    notifyListeners();
+  }
+
+  //..................................... update device.........................................................
+  Future updatedevice(
+      String terminal_sn,
+      String product_key,
+      String location,
+      String status,
+      String merchant_id,
+      String deviceid
+
+      )async{
+    try {
+      var update1=await device_repository().updatedevice(
+        terminal_sn,
+        product_key,
+        location,
+        status,
+        merchant_id,
+      deviceid);
+      print('profile update ${update1.merchantId}');
+      if(update1.terminalSn!=null){
+        _adddevice.add(_adddevice as addDevices);
+
+      }
+
+
+    } catch (e) {
+      print("error $e");
+
+    }
+  }
 
 
 
 
-  // void addDevice(Devices device) {
+
+
+// void addDevice(Devices device) {
   //   devices.add(device);
   //   notifyListeners();
   // }

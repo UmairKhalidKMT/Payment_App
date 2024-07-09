@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/controllers/devices/devices_controller.dart';
 import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
 import 'package:payment_app/models/devices/devices_model.dart';
+import 'package:payment_app/views/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
@@ -20,6 +21,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
  bool isloading=true;
   String? selectedmerchant;
   String? selectedstatus;
+  String? updatestatus;
+  String? updatemerchant;
 
 
 
@@ -39,7 +42,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isloading? Center(child: CircularProgressIndicator()) : Scaffold(
       appBar: AppBar(
         centerTitle: true,
         toolbarHeight: 60.2,
@@ -54,7 +57,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
           },
         ),
         title: Text(
@@ -79,7 +82,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
           ),
         ],
       ),
-      body: isloading? Center(child: CircularProgressIndicator()) :ListView.builder(
+      body:  ListView.builder(
         itemCount: controller.devices.length,
         itemBuilder: (context, index) {
           final device = controller.devices[index];
@@ -106,14 +109,28 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () {
-                     // controller.deleteDevice(index);
+                    onPressed: ()async {
+                   await controller..deletedevice(controller.devices[index].terminalId.toString());
+                   setState(() {
+                     isloading = true;
+                   });
+                   await controller.fetchingdevices();
+                   setState(() {
+                     isloading = false;
+                   });
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.update_rounded),
                     onPressed: () {
                      // _showUpdateDeviceDialog(context, index, device);
+                      _showUpdateDeviceDialog(context,
+                          controller.devices[index].terminalSn.toString(),
+                          controller.devices[index].productKey.toString(),
+                          controller.devices[index].location.toString(),
+                          controller.devices[index].merchantId.toString(),
+                          controller.devices[index].terminalId.toString()
+                      );
                     },
                   ),
                   IconButton(
@@ -172,11 +189,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                     decoration: const InputDecoration(labelText: 'Location'),
                     keyboardType: TextInputType.text,
                   ),
-                  TextField(
-                    controller: merchantIdController,
-                    decoration: const InputDecoration(labelText: 'Merchant ID'),
-                    keyboardType: TextInputType.text,
-                  ),
+                 
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
@@ -236,14 +249,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-                // controller.addDevice(Devices(
-                //   deviceSn: deviceSnController.text,
-                //   productKey: productKeyController.text,
-                //   location: locationController.text,
-                //   merchantId: merchantIdController.text,
-                //   status: status,
-                // ));
-                Navigator.of(context).pop();
+               controller.createdevice(
+                   deviceSnController.text,
+                   productKeyController.text,
+                   locationController.text,
+                   selectedstatus.toString(),
+                   selectedmerchant.toString()
+               );
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(
+                   builder: (context) => DeviceScreen(),
+                 ),
+               );
               },
               icon: const Icon(Icons.add_task_outlined),
             ),
@@ -253,96 +271,140 @@ class _DeviceScreenState extends State<DeviceScreen> {
     );
   }
 
-  // void _showUpdateDeviceDialog(
-  //     BuildContext context, int index, Devices device) {
-  //    final controller = Provider.of<DevicesController>(context, listen: false);
-  //   final deviceSnController = TextEditingController(text: device.deviceSn);
-  //   final productKeyController = TextEditingController(text: device.productKey);
-  //   final locationController = TextEditingController(text: device.location);
-  //   final merchantIdController = TextEditingController(text: device.merchantId);
-  //   // String status = device.status;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Update Device'),
-  //         content: SizedBox(
-  //           width: MediaQuery.of(context).size.width * 0.8,
-  //           child: SingleChildScrollView(
-  //             child: Column(
-  //               children: [
-  //                 TextField(
-  //                   controller: deviceSnController,
-  //                   decoration: const InputDecoration(labelText: 'Device SN'),
-  //                   keyboardType: TextInputType.name,
-  //                 ),
-  //                 TextField(
-  //                   controller: productKeyController,
-  //                   decoration: const InputDecoration(labelText: 'Product Key'),
-  //                   keyboardType: TextInputType.name,
-  //                 ),
-  //                 TextField(
-  //                   controller: locationController,
-  //                   decoration: const InputDecoration(labelText: 'Location'),
-  //                   keyboardType: TextInputType.text,
-  //                 ),
-  //                 TextField(
-  //                   controller: merchantIdController,
-  //                   decoration: const InputDecoration(labelText: 'Merchant ID'),
-  //                   keyboardType: TextInputType.text,
-  //                 ),
-  //                 Padding(
-  //                   padding: const EdgeInsets.symmetric(vertical: 10),
-  //                   child: DropdownButtonFormField<String>(
-  //                     value: status,
-  //                     decoration: const InputDecoration(
-  //                       labelText: 'Status',
-  //                       border: OutlineInputBorder(),
-  //                     ),
-  //                     items: ['Active', 'Inactive'].map((String value) {
-  //                       return DropdownMenuItem<String>(
-  //                         value: value,
-  //                         child: Text(value),
-  //                       );
-  //                     }).toList(),
-  //                     onChanged: (newValue) {
-  //                       status = newValue!;
-  //                     },
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text('Cancel'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           ButtonWidget(
-  //             btnName: 'Update',
-  //             voidCallback: () {
-  //               // controller.updateDevice(
-  //               //     index,
-  //               //     Devices(
-  //               //       deviceSn: deviceSnController.text,
-  //               //       productKey: productKeyController.text,
-  //               //       location: locationController.text,
-  //               //       merchantId: merchantIdController.text,
-  //               //       status: status,
-  //               //     ));
-  //               Navigator.of(context).pop();
-  //             },
-  //             icon: const Icon(Icons.update),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showUpdateDeviceDialog(
+      BuildContext context,
+      String devicesn,
+      String productkey,
+      String location,
+      String merchantid,
+      String deviceid
+
+
+
+      ) {
+
+    final deviceSnController = TextEditingController(text:devicesn);
+    final productKeyController = TextEditingController(text: productkey);
+    final locationController = TextEditingController(text: location);
+   // final merchantIdController = TextEditingController(text: device.merchantId);
+    // String status = device.status;
+     List<String?> merchantIds = merchantController.getmerchant?.data?.map((e) => e.merchantId.toString()).toList() ?? [];
+     if (!merchantIds.contains(merchantid)) {
+       merchantid = (merchantIds.isNotEmpty ? merchantIds.first : null)!;
+     }
+     updatemerchant = merchantid;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Update Device'),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: deviceSnController,
+                    decoration: const InputDecoration(labelText: 'Device SN'),
+                    keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: productKeyController,
+                    decoration: const InputDecoration(labelText: 'Product Key'),
+                    keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: locationController,
+                    decoration: const InputDecoration(labelText: 'Location'),
+                    keyboardType: TextInputType.text,
+                  ),
+                  // TextField(
+                  //   controller: merchantIdController,
+                  //   decoration: const InputDecoration(labelText: 'Merchant ID'),
+                  //   keyboardType: TextInputType.text,
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: updatestatus,
+                      decoration: const InputDecoration(
+                        labelText: 'Status',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
+                      onChanged: (newValue) {
+                        updatestatus = newValue!;
+                        print(updatestatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: updatemerchant,
+                      decoration: const InputDecoration(
+                        labelText: 'select merchant',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: merchantController.getmerchant?.data?.map((e) => DropdownMenuItem(
+                        value: e.merchantId.toString(),
+                        child: Text(e.name.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          updatemerchant = newValue;
+                          print(updatemerchant);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ButtonWidget(
+              btnName: 'Update',
+              voidCallback: ()async {
+                await controller.updatedevice(
+                    deviceSnController.text,
+                    productKeyController.text,
+                    locationController.text,
+                    updatestatus.toString(),
+                    updatemerchant.toString(),
+                    deviceid
+                    );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeviceScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.update),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _showDeviceDetails(BuildContext context,
       String devicesn,

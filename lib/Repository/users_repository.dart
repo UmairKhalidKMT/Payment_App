@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:payment_app/models/devices/addDevice_model.dart';
+import 'package:payment_app/models/user/user_model.dart';
 import 'package:payment_app/utils/apis.dart';
 
-class device_repository{
+class UsersRepository{
 
-  //.........................................................get merchant........................................................
+  //.........................................................get Users........................................................
 
-  Future fetchingdevices() async {
+  Future fetchingUsers() async {
     try {
-      final response = await http.get(Uri.parse(MyAppConstants.devices),
+      final response = await http.get(Uri.parse(MyAppConstants.users),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -35,29 +35,42 @@ class device_repository{
     }
   }
 
-  //................................................Add Device .......................................................
-  Future<addDevices> Adddevice (
-      String terminal_sn,
-      String product_key,
-      String location ,
-      String status ,
-      String merchant_id ,
+  //................................................Register Users .......................................................
+  Future<Rigister_user> Rigisterusers (
+      String first_name,
+      String last_name,
+      String username,
+      String password ,
+      String phone ,
+      String email ,
+      String address,
+      String status,
+      String subgroup_id,
+      String role_id
 
       ) async {
     // print('id $id');
     // print('Section Id $sectionid');
 
     Map<String, dynamic> data = {
-      "terminal_sn":terminal_sn,
-      "product_key":product_key,
-      "location":location,
+      "first_name":first_name,
+      "last_name":last_name,
+      "username":username,
+      "password":password,
+      "phone":phone,
+      "email":email,
+      "address":address,
       "status":status,
-      "merchant_id":merchant_id,
+      "subgroup_id":subgroup_id,
+      "role_id":role_id
+
+
+
 
 
     };
     try {
-      final response = await http.post(Uri.parse(MyAppConstants.adddevice),
+      final response = await http.post(Uri.parse(MyAppConstants.addusers),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${StaticData.token}"
@@ -73,15 +86,15 @@ class device_repository{
 
         final jsonData = json.decode(response.body);
         var record = jsonData['data'];
-        var AddBrand;
+        var AddUser;
         // var status=jsonData['status'];
         if(jsonData['status'] == 'true'){
-          AddBrand=addDevices.fromJson(record);
-          return AddBrand;
+          AddUser=Rigister_user.fromJson(record);
+          return AddUser;
         }else{
           // Get.snackbar(jsonData['status'], jsonData['message']);
 
-          AddBrand=addDevices();
+          AddUser=Rigister_user();
         }
 
         // final trackingList =
@@ -90,7 +103,7 @@ class device_repository{
         //   print(element.name);
         // });
 
-        return AddBrand;
+        return AddUser;
       } else {
         print('error2 $response');
         // Handle error, e.g., throw an exception or return a default TableInfo object
@@ -104,10 +117,10 @@ class device_repository{
     }
   }
 
-  //.........................................................Delete merchant........................................................
-  Future Deletedevice(String id ) async {
+  //.........................................................Delete Users........................................................
+  Future Deleteusers(String id ) async {
     try {
-      final response = await http.delete(Uri.parse(MyAppConstants.deletedevice+"/$id"),
+      final response = await http.delete(Uri.parse(MyAppConstants.deleteusers+"/$id"),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -123,8 +136,8 @@ class device_repository{
   }
 
 
-  //................................................update Device .......................................................
-  Future<addDevices> updatedevice (
+  //................................................update Users .......................................................
+  Future<Rigister_user> updateUsers (
       String terminal_sn,
       String product_key,
       String location ,
@@ -146,7 +159,7 @@ class device_repository{
 
     };
     try {
-      final response = await http.put(Uri.parse(MyAppConstants.updateterminal+"/${deviceid}"),
+      final response = await http.put(Uri.parse(MyAppConstants.updateuser+"/${deviceid}"),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${StaticData.token}"
@@ -162,15 +175,15 @@ class device_repository{
 
         final jsonData = json.decode(response.body);
         var record = jsonData['data'];
-        var AddBrand;
+        var adddUsers;
         // var status=jsonData['status'];
         if(jsonData['status'] == 'true'){
-          AddBrand=addDevices.fromJson(record);
-          return AddBrand;
+          adddUsers=Rigister_user.fromJson(record);
+          return adddUsers;
         }else{
           // Get.snackbar(jsonData['status'], jsonData['message']);
 
-          AddBrand=addDevices();
+          adddUsers=Rigister_user();
         }
 
         // final trackingList =
@@ -179,7 +192,7 @@ class device_repository{
         //   print(element.name);
         // });
 
-        return AddBrand;
+        return adddUsers;
       } else {
         print('error2 $response');
         // Handle error, e.g., throw an exception or return a default TableInfo object
@@ -192,8 +205,6 @@ class device_repository{
       throw Exception('Failed to tracking');
     }
   }
-
-
 
 
 

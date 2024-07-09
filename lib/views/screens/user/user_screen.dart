@@ -14,6 +14,8 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
+
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -85,7 +87,7 @@ class _UserScreenState extends State<UserScreen> {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            controller.deleteUser(index);
+                            //controller.deleteUser(index);
                           },
                         ),
                         IconButton(
@@ -193,15 +195,15 @@ class _UserScreenState extends State<UserScreen> {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-                controller.addUser(UserModel(
-                  firstName: firstNameController.text,
-                  lastName: lastNameController.text,
-                  email: emailController.text,
-                  password: passwordController.text,
-                  phone: phoneController.text,
-                  address: addressController.text,
-                  status: status,
-                ));
+                // controller.addUser(UserModel(
+                //   firstName: firstNameController.text,
+                //   lastName: lastNameController.text,
+                //   email: emailController.text,
+                //   password: passwordController.text,
+                //   phone: phoneController.text,
+                //   address: addressController.text,
+                //   status: status,
+                // ));
                 Navigator.of(context).pop();
               },
               icon: const Icon(Icons.add_task_outlined),
@@ -293,17 +295,17 @@ class _UserScreenState extends State<UserScreen> {
             ButtonWidget(
               btnName: 'Update',
               voidCallback: () {
-                controller.updateUser(
-                    index,
-                    UserModel(
-                      firstName: firstNameController.text,
-                      lastName: lastNameController.text,
-                      email: emailController.text,
-                      password: passwordController.text,
-                      phone: phoneController.text,
-                      address: addressController.text,
-                      status: status,
-                    ));
+                // controller.updateUser(
+                //     index,
+                //     UserModel(
+                //       firstName: firstNameController.text,
+                //       lastName: lastNameController.text,
+                //       email: emailController.text,
+                //       password: passwordController.text,
+                //       phone: phoneController.text,
+                //       address: addressController.text,
+                //       status: status,
+                //     ));
                 Navigator.of(context).pop();
               },
               icon: const Icon(Icons.update),

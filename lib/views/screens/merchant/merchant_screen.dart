@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 
+import '../home/home_screen.dart';
+
 class MerchantScreen extends StatefulWidget {
   const MerchantScreen({super.key});
 
@@ -57,7 +59,7 @@ class _MerchantScreenState extends State<MerchantScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
             },
           ),
           title: Text(
@@ -82,8 +84,8 @@ class _MerchantScreenState extends State<MerchantScreen> {
             ),
           ],
         ),
-        body: ListView.builder(
-          itemCount: controller.getmerchant!.data!.length,
+        body:   ListView.builder(
+          itemCount: controller.getmerchant?.data?.length ?? 1,
           itemBuilder: (context, index) {
             return Card(
               elevation: 5.0,
@@ -94,13 +96,13 @@ class _MerchantScreenState extends State<MerchantScreen> {
                 tileColor: AppColors.lightBlackColor,
                 selectedColor: AppColors.lightWhiteColor,
                 title: Text(
-                  controller.getmerchant!.data![index].name.toString(),
+                  controller.getmerchant?.data?[index].name.toString() ?? "no data is avalible",
                   style: TextStyle(
                     color: AppColors.whiteColor,
                   ),
                 ),
                 subtitle: Text(
-                  controller.getmerchant!.data![index].name.toString(),
+                  controller.getmerchant?.data?[index].name.toString() ??"Please check your internet connection and try again",
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,

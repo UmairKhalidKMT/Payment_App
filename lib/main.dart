@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
          '/merchant': (context) =>  MerchantScreen(),
 
         '/devices': (context) => const DeviceScreen(),
-        '/charges': (context) => const ScheduleCharges(),
+        '/charges': (context) => const ScheduleChargesScreen(),
         '/user': (context) => const UserScreen(),
       },
       home: const HomeScreen(),

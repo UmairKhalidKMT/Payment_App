@@ -12,6 +12,21 @@ class MyAppConstants{
   //..........................................Devices.............................
   static String devices="$baseurl/terminal";
   static String adddevice="$baseurl/createterminal";
+  static String deletedevice="$baseurl/deleteterminal";
+  static String updateterminal="$baseurl/updateterminal";
+  //......................................... Charges.............................
+  static String charges="$baseurl/charges";
+  static String addcharges="$baseurl/createcharges";
+  static String updatecharges="$baseurl/updatecharges";
+  static String deletecharges="$baseurl/deletecharges";
+//......................................... users................................
+  static String users="$baseurl/users";
+  static String addusers="$baseurl/rigister";
+  static String updateuser="$baseurl/updateusers";
+  static String deleteusers="$baseurl/deleteusers";
+  //........................................roles................................
+  static String roles="$baseurl/roles";
+
 
 
 

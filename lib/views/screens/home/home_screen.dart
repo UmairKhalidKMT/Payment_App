@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/merchant/merchant_screen.dart';
 import 'package:payment_app/views/screens/widgets/gridView_container.dart';
+import 'package:payment_app/utils/responsive_util.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -58,17 +59,18 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: Image.asset('assets/images/logo.png')),
-                  const SizedBox(
-                    width: 10,
+                    height: 40,
+                    width: 40,
+                    child: Image.asset('assets/images/logo.png'),
                   ),
+                  const SizedBox(width: 10),
                   Text(
                     'Payments',
                     style: GoogleFonts.poppins(
                       textStyle: const TextStyle(
-                          color: AppColors.whiteColor, fontSize: 32),
+                        color: AppColors.whiteColor,
+                        fontSize: 32,
+                      ),
                     ),
                   ),
                 ],
@@ -81,9 +83,17 @@ class HomeScreen extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: paymentMethodsList.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: ResponsiveUtil.isDesktop(context)
+                        ? 4
+                        : ResponsiveUtil.isTablet(context)
+                            ? 3
+                            : 2,
+                    childAspectRatio: ResponsiveUtil.isDesktop(context)
+                        ? 1.5
+                        : ResponsiveUtil.isTablet(context)
+                            ? 1.2
+                            : 1,
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
