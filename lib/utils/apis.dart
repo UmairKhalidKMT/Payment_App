@@ -21,7 +21,7 @@ class MyAppConstants{
   static String deletecharges="$baseurl/deletecharges";
 //......................................... users................................
   static String users="$baseurl/users";
-  static String addusers="$baseurl/rigister";
+  static String addusers="$baseurl/register";
   static String updateuser="$baseurl/updateusers";
   static String deleteusers="$baseurl/deleteusers";
   //........................................roles................................

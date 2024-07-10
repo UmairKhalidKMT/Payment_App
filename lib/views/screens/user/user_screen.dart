@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:payment_app/controllers/Roles_controller.dart';
 import 'package:payment_app/controllers/user/user_controller.dart';
 import 'package:payment_app/models/user/user_model.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 import 'package:provider/provider.dart';
+
+import '../../../controllers/subgroup_controller.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -14,13 +17,38 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
+  RolesController rolesController=RolesController();
+  SubgroupController subgroupController = SubgroupController();
+  UserController controller=UserController();
+  String? selectedsubgroup;
+  String? selectedstatus;
+  String? updatestatus;
+  String? updatesubgroup;
+  String? seletectedrole;
+
+ bool isloading=true;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    rolesController.fetchingRoles();
+    subgroupController.fetchingsubgroup();
+    Future.delayed(Duration(seconds: 2)).then((value) {
+      setState(() {
+        isloading = false;
+      });
+    });
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => UserController(),
-      child: Scaffold(
+      child: isloading? Center(child: CircularProgressIndicator()) :Scaffold(
         appBar: AppBar(
           centerTitle: true,
           toolbarHeight: 60.2,
@@ -122,6 +150,7 @@ class _UserScreenState extends State<UserScreen> {
     final passwordController = TextEditingController();
     final phoneController = TextEditingController();
     final addressController = TextEditingController();
+    final usernamecontroller = TextEditingController();
     String status = 'Active';
 
     showDialog(
@@ -148,6 +177,11 @@ class _UserScreenState extends State<UserScreen> {
                     keyboardType: TextInputType.emailAddress,
                   ),
                   TextField(
+                    controller: usernamecontroller,
+                    decoration: const InputDecoration(labelText: 'username'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  TextField(
                     controller: passwordController,
                     decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
@@ -165,19 +199,64 @@ class _UserScreenState extends State<UserScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
-                      value: status,
+                      value: selectedstatus,
                       decoration: const InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['Active', 'Inactive'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
                       onChanged: (newValue) {
-                        status = newValue!;
+                        selectedstatus = newValue!;
+                        print(selectedstatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedsubgroup,
+                      decoration: const InputDecoration(
+                        labelText: 'subgroup',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: subgroupController.getsubgroup_list?.data?.map((e) => DropdownMenuItem(
+                        value: e.subgroupId.toString(),
+                        child: Text(e.subgroupName.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedsubgroup = newValue;
+                        });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: seletectedrole,
+                      decoration: const InputDecoration(
+                        labelText: 'Select role',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: rolesController.getRoles?.data?.map((e) => DropdownMenuItem(
+                        value: e.roleId.toString(),
+                        child: Text(e.roleName.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          seletectedrole = newValue;
+                        });
                       },
                     ),
                   ),
@@ -194,7 +273,21 @@ class _UserScreenState extends State<UserScreen> {
             ),
             ButtonWidget(
               btnName: 'Add',
-              voidCallback: () {
+              voidCallback: () async {
+
+                await controller.RegisterUser(
+                    firstNameController.text,
+                    lastNameController.text,
+                    usernamecontroller.text,
+                    passwordController.text,
+                    phoneController.text,
+                    emailController.text,
+                    addressController.text,
+                    selectedstatus.toString(),
+                    selectedsubgroup.toString(),
+                    seletectedrole.toString()
+                );
+
                 // controller.addUser(UserModel(
                 //   firstName: firstNameController.text,
                 //   lastName: lastNameController.text,

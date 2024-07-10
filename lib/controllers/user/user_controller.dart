@@ -8,8 +8,8 @@ class UserController extends ChangeNotifier {
 
   //..................................... Rigister User.........................................................
   Future RegisterUser(
-      String first_name,
-      String last_name,
+      String firstName,
+      String lastName,
       String username,
       String password ,
       String phone ,
@@ -21,7 +21,7 @@ class UserController extends ChangeNotifier {
 
       )async{
     try {
-      var update1=await UsersRepository().Rigisterusers(first_name, last_name, username, password, phone, email, address, status, subgroup_id, role_id);
+      var update1=await UsersRepository().Rigisterusers(firstName, lastName, username, password, phone, email, address, status, subgroup_id, role_id);
 
       print('profile update ${update1.username}');
       if(update1.username!=null){
