@@ -11,6 +11,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> paymentMethodsList = [
       {
+        'iconName': Icons.dashboard,
+        'title': 'Dashboard',
+        'navigator': () {
+          Navigator.pushNamed(context, '/dashboard');
+        },
+      },
+      {
         'iconName': Icons.business_center_outlined,
         'title': 'Merchants',
         'navigator': () {
@@ -43,6 +50,13 @@ class HomeScreen extends StatelessWidget {
         'title': 'Reports',
         'navigator': () {
           Navigator.pushNamed(context, '/reports-home');
+        },
+      },
+      {
+        'iconName': Icons.settings,
+        'title': 'Settings',
+        'navigator': () {
+          Navigator.pushNamed(context, '/settings');
         },
       },
     ];
