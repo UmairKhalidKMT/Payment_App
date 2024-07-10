@@ -1,117 +1,163 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/controllers/devices/devices_controller.dart';
+import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
 import 'package:payment_app/models/devices/devices_model.dart';
+import 'package:payment_app/views/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 
-class DeviceScreen extends StatelessWidget {
+class DeviceScreen extends StatefulWidget {
   const DeviceScreen({super.key});
 
   @override
+  State<DeviceScreen> createState() => _DeviceScreenState();
+}
+
+class _DeviceScreenState extends State<DeviceScreen> {
+  DevicesController controller=DevicesController();
+  MerchantController merchantController=MerchantController();
+ bool isloading=true;
+  String? selectedmerchant;
+  String? selectedstatus;
+  String? updatestatus;
+  String? updatemerchant;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchingdevices();
+    merchantController.fetchingmerchant();
+
+    Future.delayed(Duration(seconds: 2)).then((value) {
+      setState(() {
+        isloading = false;
+      });
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => DevicesController(),
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          toolbarHeight: 60.2,
-          toolbarOpacity: 0.8,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(50),
-              bottomLeft: Radius.circular(50),
-            ),
+    return isloading? Center(child: CircularProgressIndicator()) : Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        toolbarHeight: 60.2,
+        toolbarOpacity: 0.8,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomRight: Radius.circular(50),
+            bottomLeft: Radius.circular(50),
           ),
-          elevation: 1.0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            'Devices',
-            style: GoogleFonts.poppins(
-              textStyle: const TextStyle(fontSize: 22),
-            ),
-          ),
-          actions: [
-            Builder(
-              builder: (context) {
-                double screenWidth = MediaQuery.of(context).size.width;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: IconButton(
-                    icon: const Icon(Icons.person_add_rounded),
-                    iconSize: screenWidth / 13,
-                    onPressed: () => _showAddDeviceDialog(context),
-                  ),
-                );
-              },
-            ),
-          ],
         ),
-        body: Consumer<DevicesController>(
-          builder: (context, controller, child) {
-            return ListView.builder(
-              itemCount: controller.devices.length,
-              itemBuilder: (context, index) {
-                final device = controller.devices[index];
-                final isInactive = device.status == 'Inactive';
-                return Card(
-                  elevation: 5.0,
-                  margin: const EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: ListTile(
-                    tileColor: AppColors.lightBlackColor,
-                    selectedColor: AppColors.lightWhiteColor,
-                    title: Text(
-                      device.deviceSn,
-                      style: TextStyle(
-                        color: isInactive
-                            ? AppColors.redColor
-                            : AppColors.whiteColor,
-                      ),
-                    ),
-                    subtitle: Text(device.productKey),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            controller.deleteDevice(index);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.update_rounded),
-                          onPressed: () {
-                            _showUpdateDeviceDialog(context, index, device);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.visibility),
-                          onPressed: () {
-                            _showDeviceDetails(context, device);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
+        elevation: 1.0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
           },
         ),
+        title: Text(
+          'Devices',
+          style: GoogleFonts.poppins(
+            textStyle: const TextStyle(fontSize: 22),
+          ),
+        ),
+        actions: [
+          Builder(
+            builder: (context) {
+              double screenWidth = MediaQuery.of(context).size.width;
+              return Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  icon: const Icon(Icons.person_add_rounded),
+                  iconSize: screenWidth / 13,
+                  onPressed: () => _showAddDeviceDialog(context),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body:  ListView.builder(
+        itemCount: controller.devices.length,
+        itemBuilder: (context, index) {
+          final device = controller.devices[index];
+          final isInactive = device.status == 'Inactive';
+          return Card(
+            elevation: 5.0,
+            margin: const EdgeInsets.only(
+                left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: ListTile(
+              tileColor: AppColors.lightBlackColor,
+              selectedColor: AppColors.lightWhiteColor,
+              title: Text(
+                device.terminalSn.toString(),
+                style: TextStyle(
+                  color: isInactive
+                      ? AppColors.redColor
+                      : AppColors.whiteColor,
+                ),
+              ),
+              subtitle: Text(device.productKey.toString()),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: ()async {
+                   await controller..deletedevice(controller.devices[index].terminalId.toString());
+                   setState(() {
+                     isloading = true;
+                   });
+                   await controller.fetchingdevices();
+                   setState(() {
+                     isloading = false;
+                   });
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.update_rounded),
+                    onPressed: () {
+                     // _showUpdateDeviceDialog(context, index, device);
+                      _showUpdateDeviceDialog(context,
+                          controller.devices[index].terminalSn.toString(),
+                          controller.devices[index].productKey.toString(),
+                          controller.devices[index].location.toString(),
+                          controller.devices[index].merchantId.toString(),
+                          controller.devices[index].terminalId.toString()
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.visibility),
+                    onPressed: () {
+                     _showDeviceDetails(context,
+                         device.terminalSn.toString(),
+                         device.productKey.toString(),
+                         device.location.toString(),
+                         device.merchantId.toString(),
+                         device.status.toString()
+                     );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
+
+
   void _showAddDeviceDialog(BuildContext context) {
-    final controller = Provider.of<DevicesController>(context, listen: false);
+
     final deviceSnController = TextEditingController();
     final productKeyController = TextEditingController();
     final locationController = TextEditingController();
@@ -143,27 +189,49 @@ class DeviceScreen extends StatelessWidget {
                     decoration: const InputDecoration(labelText: 'Location'),
                     keyboardType: TextInputType.text,
                   ),
-                  TextField(
-                    controller: merchantIdController,
-                    decoration: const InputDecoration(labelText: 'Merchant ID'),
-                    keyboardType: TextInputType.text,
-                  ),
+                 
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
-                      value: status,
+                      value: selectedstatus,
                       decoration: const InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['Active', 'Inactive'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
                       onChanged: (newValue) {
-                        status = newValue!;
+                        selectedstatus = newValue!;
+                        print(selectedstatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedmerchant,
+                      decoration: const InputDecoration(
+                        labelText: 'select merchant',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: merchantController.getmerchant?.data?.map((e) => DropdownMenuItem(
+                        value: e.merchantId.toString(),
+                        child: Text(e.name.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedmerchant = newValue;
+                          print(selectedmerchant);
+                        });
                       },
                     ),
                   ),
@@ -181,14 +249,19 @@ class DeviceScreen extends StatelessWidget {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-                controller.addDevice(Devices(
-                  deviceSn: deviceSnController.text,
-                  productKey: productKeyController.text,
-                  location: locationController.text,
-                  merchantId: merchantIdController.text,
-                  status: status,
-                ));
-                Navigator.of(context).pop();
+               controller.createdevice(
+                   deviceSnController.text,
+                   productKeyController.text,
+                   locationController.text,
+                   selectedstatus.toString(),
+                   selectedmerchant.toString()
+               );
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(
+                   builder: (context) => DeviceScreen(),
+                 ),
+               );
               },
               icon: const Icon(Icons.add_task_outlined),
             ),
@@ -199,13 +272,27 @@ class DeviceScreen extends StatelessWidget {
   }
 
   void _showUpdateDeviceDialog(
-      BuildContext context, int index, Devices device) {
-    final controller = Provider.of<DevicesController>(context, listen: false);
-    final deviceSnController = TextEditingController(text: device.deviceSn);
-    final productKeyController = TextEditingController(text: device.productKey);
-    final locationController = TextEditingController(text: device.location);
-    final merchantIdController = TextEditingController(text: device.merchantId);
-    String status = device.status;
+      BuildContext context,
+      String devicesn,
+      String productkey,
+      String location,
+      String merchantid,
+      String deviceid
+
+
+
+      ) {
+
+    final deviceSnController = TextEditingController(text:devicesn);
+    final productKeyController = TextEditingController(text: productkey);
+    final locationController = TextEditingController(text: location);
+   // final merchantIdController = TextEditingController(text: device.merchantId);
+    // String status = device.status;
+     List<String?> merchantIds = merchantController.getmerchant?.data?.map((e) => e.merchantId.toString()).toList() ?? [];
+     if (!merchantIds.contains(merchantid)) {
+       merchantid = (merchantIds.isNotEmpty ? merchantIds.first : null)!;
+     }
+     updatemerchant = merchantid;
 
     showDialog(
       context: context,
@@ -232,27 +319,53 @@ class DeviceScreen extends StatelessWidget {
                     decoration: const InputDecoration(labelText: 'Location'),
                     keyboardType: TextInputType.text,
                   ),
-                  TextField(
-                    controller: merchantIdController,
-                    decoration: const InputDecoration(labelText: 'Merchant ID'),
-                    keyboardType: TextInputType.text,
-                  ),
+                  // TextField(
+                  //   controller: merchantIdController,
+                  //   decoration: const InputDecoration(labelText: 'Merchant ID'),
+                  //   keyboardType: TextInputType.text,
+                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
-                      value: status,
+                      value: updatestatus,
                       decoration: const InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['Active', 'Inactive'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: '1',
+                          child: Text('Active'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '0',
+                          child: Text('Inactive'),
+                        ),
+                      ],
                       onChanged: (newValue) {
-                        status = newValue!;
+                        updatestatus = newValue!;
+                        print(updatestatus);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: DropdownButtonFormField<String>(
+                      value: updatemerchant,
+                      decoration: const InputDecoration(
+                        labelText: 'select merchant',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: merchantController.getmerchant?.data?.map((e) => DropdownMenuItem(
+                        value: e.merchantId.toString(),
+                        child: Text(e.name.toString()),
+                      )).toList() ??
+                          [],
+                      onChanged: (newValue) {
+                        setState(() {
+                          updatemerchant = newValue;
+                          print(updatemerchant);
+                        });
                       },
                     ),
                   ),
@@ -269,17 +382,21 @@ class DeviceScreen extends StatelessWidget {
             ),
             ButtonWidget(
               btnName: 'Update',
-              voidCallback: () {
-                controller.updateDevice(
-                    index,
-                    Devices(
-                      deviceSn: deviceSnController.text,
-                      productKey: productKeyController.text,
-                      location: locationController.text,
-                      merchantId: merchantIdController.text,
-                      status: status,
-                    ));
-                Navigator.of(context).pop();
+              voidCallback: ()async {
+                await controller.updatedevice(
+                    deviceSnController.text,
+                    productKeyController.text,
+                    locationController.text,
+                    updatestatus.toString(),
+                    updatemerchant.toString(),
+                    deviceid
+                    );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeviceScreen(),
+                  ),
+                );
               },
               icon: const Icon(Icons.update),
             ),
@@ -289,7 +406,13 @@ class DeviceScreen extends StatelessWidget {
     );
   }
 
-  void _showDeviceDetails(BuildContext context, Devices device) {
+  void _showDeviceDetails(BuildContext context,
+      String devicesn,
+      String productkey,
+      String Location,
+      String merchantid,
+      String status
+      ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -299,15 +422,15 @@ class DeviceScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Device SN: ${device.deviceSn}'),
+                Text('Device SN: ${devicesn.toString()}'),
                 const SizedBox(height: 8),
-                Text('Product Key: ${device.productKey}'),
+                Text('Product Key: ${productkey.toString()}'),
                 const SizedBox(height: 8),
-                Text('Location: ${device.location}'),
+                Text('Location: ${Location.toString()}'),
                 const SizedBox(height: 8),
-                Text('Merchant ID: ${device.merchantId}'),
+                Text('Merchant ID: ${merchantid.toString()}'),
                 const SizedBox(height: 8),
-                Text('Status: ${device.status}'),
+                Text('Status: ${status.toString()}'),
               ],
             ),
           ),

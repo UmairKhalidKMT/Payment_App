@@ -45,11 +45,17 @@ class MyApp extends StatelessWidget {
             backgroundColor: AppColors.primaryColor,
           )),
       routes: {
+<<<<<<< HEAD
         '/dashboard': (context) => const DashboardScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/merchant': (context) => const MerchantScreen(),
+=======
+        // '/login': (context) => LoginScreen(),
+         '/merchant': (context) =>  MerchantScreen(),
+
+>>>>>>> 7a964fa22001037a0262d1b77ddbe3e9a47cf55e
         '/devices': (context) => const DeviceScreen(),
-        '/charges': (context) => const ScheduleCharges(),
+        '/charges': (context) => const ScheduleChargesScreen(),
         '/user': (context) => const UserScreen(),
         '/totaldevices': (context) => const TotalDevicesScreen(),
         '/totalrevenue': (context) => const TotalRevenueScreen(),
