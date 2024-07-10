@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/utils/app_colors.dart';
+import 'package:payment_app/views/screens/merchant/merchant_screen.dart';
 import 'package:payment_app/views/screens/widgets/gridView_container.dart';
 import 'package:payment_app/utils/responsive_util.dart';
 
@@ -101,6 +102,7 @@ class HomeScreen extends StatelessWidget {
                       iconData: paymentMethodsList[index]['iconName'],
                       text: paymentMethodsList[index]['title'],
                       ontap: paymentMethodsList[index]['navigator'],
+
                     );
                   },
                 ),
