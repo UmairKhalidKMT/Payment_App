@@ -8,3 +8,6 @@ class AppColors {
   static const lightWhiteColor = Colors.white54;
   static const redColor = Colors.red;
 }
+
+
+
