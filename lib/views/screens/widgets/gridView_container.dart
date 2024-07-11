@@ -10,7 +10,8 @@ class GridViewContainer extends StatelessWidget {
   const GridViewContainer({
     super.key,
     required this.iconData,
-    required this.text,required this.ontap,
+    required this.text,
+    required this.ontap,
   });
 
   @override
@@ -35,12 +36,15 @@ class GridViewContainer extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                textStyle: const  TextStyle(color: AppColors.whiteColor, fontSize: 18,fontWeight: FontWeight.bold),
+                textStyle: const TextStyle(
+                    color: AppColors.whiteColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ],
         ),
-    ),
-);
-}
+      ),
+    );
+  }
 }
