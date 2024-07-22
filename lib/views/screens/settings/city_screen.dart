@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:payment_app/controllers/settings/city/city_controller.dart';
-import 'package:payment_app/models/settings/cities/city_model.dart';
+import 'package:payment_app/controllers/settings/city_controller.dart';
+import 'package:payment_app/models/settings/city_model.dart';
 import 'package:payment_app/utils/responsive_util.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 import 'package:payment_app/views/screens/widgets/gridView_container.dart';
@@ -23,7 +23,7 @@ class _CityScreenState extends State<CityScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Cities',
+          'Select City',
           style: GoogleFonts.poppins(
             textStyle: const TextStyle(fontSize: 22),
           ),

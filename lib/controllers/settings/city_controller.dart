@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:payment_app/models/settings/cities/city_model.dart';
+import 'package:payment_app/models/settings/city_model.dart';
 
 class CityController extends ChangeNotifier {
   List<City> cities = [];
