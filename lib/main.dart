@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:payment_app/controllers/settings/city/city_controller.dart';
+import 'package:payment_app/controllers/settings/city_controller.dart';
+import 'package:payment_app/controllers/settings/country_controller.dart';
+import 'package:payment_app/controllers/settings/group_controller.dart';
+import 'package:payment_app/controllers/settings/industry_controller.dart';
+import 'package:payment_app/controllers/settings/region_controller.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/dashboard/dashboard_screen.dart';
 import 'package:payment_app/views/screens/dashboard/total_devices_screen.dart';
@@ -24,6 +28,10 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CityController()),
+        ChangeNotifierProvider(create: (_) => CountryController()),
+        ChangeNotifierProvider(create: (_) => GroupController()),
+        ChangeNotifierProvider(create: (_) => RegionController()),
+        ChangeNotifierProvider(create: (_) => IndustryController()),
       ],
       child: const MyApp(),
     ),

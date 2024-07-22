@@ -19,7 +19,7 @@ class GridViewContainer extends StatelessWidget {
     return InkWell(
       onTap: ontap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12), 
         decoration: BoxDecoration(
           color: AppColors.lightBlackColor,
           borderRadius: BorderRadius.circular(12),
