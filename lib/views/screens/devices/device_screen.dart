@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:payment_app/controllers/devices/devices_controller.dart';
 import 'package:payment_app/controllers/merchant/merchant_form_controller.dart';
-import 'package:payment_app/models/devices/devices_model.dart';
+import 'package:payment_app/utils/responsive_util.dart';
 import 'package:payment_app/views/screens/home/home_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:payment_app/utils/app_colors.dart';
 import 'package:payment_app/views/screens/widgets/button.dart';
 
@@ -16,15 +15,13 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
-  DevicesController controller=DevicesController();
-  MerchantController merchantController=MerchantController();
- bool isloading=true;
+  DevicesController controller = DevicesController();
+  MerchantController merchantController = MerchantController();
+  bool isloading = true;
   String? selectedmerchant;
   String? selectedstatus;
   String? updatestatus;
   String? updatemerchant;
-
-
 
   @override
   void initState() {
@@ -39,125 +36,131 @@ class _DeviceScreenState extends State<DeviceScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return isloading? Center(child: CircularProgressIndicator()) : Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        toolbarHeight: 60.2,
-        toolbarOpacity: 0.8,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(50),
-            bottomLeft: Radius.circular(50),
-          ),
-        ),
-        elevation: 1.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
-          },
-        ),
-        title: Text(
-          'Devices',
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(fontSize: 22),
-          ),
-        ),
-        actions: [
-          Builder(
-            builder: (context) {
-              double screenWidth = MediaQuery.of(context).size.width;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: IconButton(
-                  icon: const Icon(Icons.person_add_rounded),
-                  iconSize: screenWidth / 13,
-                  onPressed: () => _showAddDeviceDialog(context),
+    return isloading
+        ? Center(child: CircularProgressIndicator())
+        : Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              toolbarHeight: 60.2,
+              toolbarOpacity: 0.8,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(50),
+                  bottomLeft: Radius.circular(50),
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-      body:  ListView.builder(
-        itemCount: controller.devices.length,
-        itemBuilder: (context, index) {
-          final device = controller.devices[index];
-          final isInactive = device.status == 'Inactive';
-          return Card(
-            elevation: 5.0,
-            margin: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            child: ListTile(
-              tileColor: AppColors.lightBlackColor,
-              selectedColor: AppColors.lightWhiteColor,
+              ),
+              elevation: 1.0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
+                      ));
+                },
+              ),
               title: Text(
-                device.terminalSn.toString(),
-                style: TextStyle(
-                  color: isInactive
-                      ? AppColors.redColor
-                      : AppColors.whiteColor,
+                'Devices',
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(fontSize: 22),
                 ),
               ),
-              subtitle: Text(device.productKey.toString()),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: ()async {
-                   await controller..deletedevice(controller.devices[index].terminalId.toString());
-                   setState(() {
-                     isloading = true;
-                   });
-                   await controller.fetchingdevices();
-                   setState(() {
-                     isloading = false;
-                   });
-                    },
+              actions: [
+                Builder(
+                  builder: (context) {
+                    double screenWidth = MediaQuery.of(context).size.width;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: const Icon(Icons.person_add_rounded),
+                        iconSize: screenWidth / 13,
+                        onPressed: () => _showAddDeviceDialog(context),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            body: ListView.builder(
+              itemCount: controller.devices.length,
+              itemBuilder: (context, index) {
+                final device = controller.devices[index];
+                final isInactive = device.status == 'Inactive';
+                return Card(
+                  elevation: 5.0,
+                  margin: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: ListTile(
+                    tileColor: AppColors.lightBlackColor,
+                    selectedColor: AppColors.lightWhiteColor,
+                    title: Text(
+                      device.terminalSn.toString(),
+                      style: TextStyle(
+                        color: isInactive
+                            ? AppColors.redColor
+                            : AppColors.whiteColor,
+                      ),
+                    ),
+                    subtitle: Text(device.productKey.toString()),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await controller
+                              ..deletedevice(controller
+                                  .devices[index].terminalId
+                                  .toString());
+                            setState(() {
+                              isloading = true;
+                            });
+                            await controller.fetchingdevices();
+                            setState(() {
+                              isloading = false;
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.update_rounded),
+                          onPressed: () {
+                            // _showUpdateDeviceDialog(context, index, device);
+                            _showUpdateDeviceDialog(
+                                context,
+                                controller.devices[index].terminalSn.toString(),
+                                controller.devices[index].productKey.toString(),
+                                controller.devices[index].location.toString(),
+                                controller.devices[index].merchantId.toString(),
+                                controller.devices[index].terminalId
+                                    .toString());
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.visibility),
+                          onPressed: () {
+                            _showDeviceDetails(
+                                context,
+                                device.terminalSn.toString(),
+                                device.productKey.toString(),
+                                device.location.toString(),
+                                device.merchantId.toString(),
+                                device.status.toString());
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.update_rounded),
-                    onPressed: () {
-                     // _showUpdateDeviceDialog(context, index, device);
-                      _showUpdateDeviceDialog(context,
-                          controller.devices[index].terminalSn.toString(),
-                          controller.devices[index].productKey.toString(),
-                          controller.devices[index].location.toString(),
-                          controller.devices[index].merchantId.toString(),
-                          controller.devices[index].terminalId.toString()
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.visibility),
-                    onPressed: () {
-                     _showDeviceDetails(context,
-                         device.terminalSn.toString(),
-                         device.productKey.toString(),
-                         device.location.toString(),
-                         device.merchantId.toString(),
-                         device.status.toString()
-                     );
-                    },
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           );
-        },
-      ),
-    );
   }
 
-
-
   void _showAddDeviceDialog(BuildContext context) {
-
     final deviceSnController = TextEditingController();
     final productKeyController = TextEditingController();
     final locationController = TextEditingController();
@@ -189,7 +192,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
                     decoration: const InputDecoration(labelText: 'Location'),
                     keyboardType: TextInputType.text,
                   ),
-                 
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: DropdownButtonFormField<String>(
@@ -222,10 +224,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
                         labelText: 'select merchant',
                         border: OutlineInputBorder(),
                       ),
-                      items: merchantController.getmerchant?.data?.map((e) => DropdownMenuItem(
-                        value: e.merchantId.toString(),
-                        child: Text(e.name.toString()),
-                      )).toList() ??
+                      items: merchantController.getmerchant?.data
+                              ?.map((e) => DropdownMenuItem(
+                                    value: e.merchantId.toString(),
+                                    child: Text(e.name.toString()),
+                                  ))
+                              .toList() ??
                           [],
                       onChanged: (newValue) {
                         setState(() {
@@ -249,19 +253,18 @@ class _DeviceScreenState extends State<DeviceScreen> {
             ButtonWidget(
               btnName: 'Add',
               voidCallback: () {
-               controller.createdevice(
-                   deviceSnController.text,
-                   productKeyController.text,
-                   locationController.text,
-                   selectedstatus.toString(),
-                   selectedmerchant.toString()
-               );
-               Navigator.pushReplacement(
-                 context,
-                 MaterialPageRoute(
-                   builder: (context) => DeviceScreen(),
-                 ),
-               );
+                controller.createdevice(
+                    deviceSnController.text,
+                    productKeyController.text,
+                    locationController.text,
+                    selectedstatus.toString(),
+                    selectedmerchant.toString());
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeviceScreen(),
+                  ),
+                );
               },
               icon: const Icon(Icons.add_task_outlined),
             ),
@@ -271,28 +274,21 @@ class _DeviceScreenState extends State<DeviceScreen> {
     );
   }
 
-  void _showUpdateDeviceDialog(
-      BuildContext context,
-      String devicesn,
-      String productkey,
-      String location,
-      String merchantid,
-      String deviceid
-
-
-
-      ) {
-
-    final deviceSnController = TextEditingController(text:devicesn);
+  void _showUpdateDeviceDialog(BuildContext context, String devicesn,
+      String productkey, String location, String merchantid, String deviceid) {
+    final deviceSnController = TextEditingController(text: devicesn);
     final productKeyController = TextEditingController(text: productkey);
     final locationController = TextEditingController(text: location);
-   // final merchantIdController = TextEditingController(text: device.merchantId);
+    // final merchantIdController = TextEditingController(text: device.merchantId);
     // String status = device.status;
-     List<String?> merchantIds = merchantController.getmerchant?.data?.map((e) => e.merchantId.toString()).toList() ?? [];
-     if (!merchantIds.contains(merchantid)) {
-       merchantid = (merchantIds.isNotEmpty ? merchantIds.first : null)!;
-     }
-     updatemerchant = merchantid;
+    List<String?> merchantIds = merchantController.getmerchant?.data
+            ?.map((e) => e.merchantId.toString())
+            .toList() ??
+        [];
+    if (!merchantIds.contains(merchantid)) {
+      merchantid = (merchantIds.isNotEmpty ? merchantIds.first : null)!;
+    }
+    updatemerchant = merchantid;
 
     showDialog(
       context: context,
@@ -356,10 +352,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
                         labelText: 'select merchant',
                         border: OutlineInputBorder(),
                       ),
-                      items: merchantController.getmerchant?.data?.map((e) => DropdownMenuItem(
-                        value: e.merchantId.toString(),
-                        child: Text(e.name.toString()),
-                      )).toList() ??
+                      items: merchantController.getmerchant?.data
+                              ?.map((e) => DropdownMenuItem(
+                                    value: e.merchantId.toString(),
+                                    child: Text(e.name.toString()),
+                                  ))
+                              .toList() ??
                           [],
                       onChanged: (newValue) {
                         setState(() {
@@ -382,15 +380,14 @@ class _DeviceScreenState extends State<DeviceScreen> {
             ),
             ButtonWidget(
               btnName: 'Update',
-              voidCallback: ()async {
+              voidCallback: () async {
                 await controller.updatedevice(
                     deviceSnController.text,
                     productKeyController.text,
                     locationController.text,
                     updatestatus.toString(),
                     updatemerchant.toString(),
-                    deviceid
-                    );
+                    deviceid);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -406,44 +403,156 @@ class _DeviceScreenState extends State<DeviceScreen> {
     );
   }
 
-  void _showDeviceDetails(BuildContext context,
-      String devicesn,
-      String productkey,
-      String Location,
-      String merchantid,
-      String status
-      ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Device Details'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Device SN: ${devicesn.toString()}'),
-                const SizedBox(height: 8),
-                Text('Product Key: ${productkey.toString()}'),
-                const SizedBox(height: 8),
-                Text('Location: ${Location.toString()}'),
-                const SizedBox(height: 8),
-                Text('Merchant ID: ${merchantid.toString()}'),
-                const SizedBox(height: 8),
-                Text('Status: ${status.toString()}'),
-              ],
+  void _showDeviceDetails(BuildContext context, String devicesn,
+      String productkey, String location, String merchantid, String status) {
+    if (ResponsiveUtil.isDesktop(context) || ResponsiveUtil.isTablet(context)) {
+      // Web or tablet view
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Device Details (Web)'),
+            content: SingleChildScrollView(
+              child: Table(
+                border: TableBorder.all(),
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(2),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Device SN:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(devicesn),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Product Key:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(productkey),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Location:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(location),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Merchant ID:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(merchantid),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Status:',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(status),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            actions: [
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Mobile view
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Device Details'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Device SN: $devicesn'),
+                  const SizedBox(height: 8),
+                  Text('Product Key: $productkey'),
+                  const SizedBox(height: 8),
+                  Text('Location: $location'),
+                  const SizedBox(height: 8),
+                  Text('Merchant ID: $merchantid'),
+                  const SizedBox(height: 8),
+                  Text('Status: $status'),
+                ],
+              ),
             ),
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
