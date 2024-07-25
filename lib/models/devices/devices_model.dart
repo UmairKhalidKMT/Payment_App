@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Devices {
   int? terminalId;
   String? terminalSn;
